@@ -1,10 +1,8 @@
 
 
 const getAllUsersQuery = "SELECT * FROM users";
-  
-//async function insertIntoUser(email) {
-//  await pool.query("INSERT INTO users (username) VALUES ($1)", [username]);
-//}
+const addNewUserQuery = `INSERT INTO users (name, email, password, role, status) VALUES ($1, $2, $3, $4, $5);`
+
 
 module.exports = {
   getAllUsersQuery,
