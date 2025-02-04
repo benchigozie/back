@@ -29,14 +29,14 @@ const getUsersCards = (req, res) => {
 
 
 const registerCard = async (req, res) => {
-    console.log("bluuuu");
-    /*try {
-        pool.query(`INSERT INTO cards (name, uid, email, status) VALUES ($1, $2, $3, $4,);`, [req.body.name, req.body.uid, req.body.email, "active"]);
+    
+    try {
+        await pool.query(`INSERT INTO cards (name, uid, email, status) VALUES ($1, $2, $3, $4);`, [req.body.name, req.body.uid, req.body.email, "active"]);
         res.status(200).json({ success: "successfully registered Card" });
     } catch (error) {
         res.status(500).json({ error: "unable to add Card to the database" });
-    };*/
-
+    };  
+    
 };
 
 
