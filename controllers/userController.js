@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const getAllUsers = (req, res) => {
+    
     pool.query(queries.getAllUsersQuery, (error, results) => {
         if (error) throw error;
         res.status(200).json(results.rows);
@@ -16,7 +17,7 @@ const getAllUsers = (req, res) => {
 
 const registerUser = async (req, res) => {
 
-
+    
 
     try {
         const existingUsers = await pool.query("SELECT * FROM users WHERE email = $1", [req.body.email]);
@@ -45,13 +46,13 @@ const registerUser = async (req, res) => {
 };
 
 const authenticateUser = async (req, res) => {
+   
     const existingUsers = await pool.query("SELECT * FROM users WHERE email = $1", [req.body.email]);
     if (existingUsers.rows.length < 1) {
-        console.log('not found user');
-        return res.status(400).json({ error: 'user not found' })
+      
+        return res.status(400).json({ error: 'user not found' });
     }
-    //const validPass = await bcrypt.compare(req.body.password, existingUsers.rows[0].password);
-    //console.log(validPass)
+    
     {
         {
             try {
@@ -68,16 +69,14 @@ const authenticateUser = async (req, res) => {
                         role: userRole,
                         status: userStatus,
                     };
-                    console.log(user);
-                    console.log('user verified')
+                    
     
                     const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
                     res.json({
                         user,
                         accessToken
                     });
-                    console.log('responded');
-                    console.log(accessToken)
+                    
     
     
                 }
@@ -95,15 +94,47 @@ const authenticateUser = async (req, res) => {
     }
 
 
+};
 
 
+const enableUser = async (req, res) => {
+    
+        try {
+            await pool.query("UPDATE users SET status = 'active' WHERE email = $1;", [req.body.email])
+        } finally {
+            res.status(200).json({message: 'success'})
+        }
+   
+};
 
+const disableUser = async (req, res) => {
+    
+        try {
+            await pool.query("UPDATE users SET status = 'inactive' WHERE email = $1;", [req.body.email])
+        } finally {
+            res.status(200).json({message: 'success'})
+        }
 
 };
+
+const deleteUser = async (req, res) => {
+
+    try {
+        await pool.query("DELETE FROM users WHERE email = $1;", [req.body.email])
+    } finally {
+        
+        res.status(200).json({message: 'success'})
+    }
+};
+
 
 module.exports = {
     getAllUsers,
     registerUser,
     authenticateUser,
+    enableUser,
+    disableUser,
+    deleteUser,
+
 }
 

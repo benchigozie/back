@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
 
+const cors = require('cors');
+app.use(cors());
+
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -8,11 +11,13 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
 //importing routes
-const authRoute = require('./routes/auth');
+
 const userRoute = require('./routes/user');
+const cardRoute = require('./routes/card');
 
 
 app.use('/api/user', userRoute);
+app.use('/api/card', cardRoute)
 app.use(express.json());
 app.use(bodyParser.json())
 
