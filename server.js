@@ -14,10 +14,13 @@ app.use(bodyParser.json());
 
 const userRoute = require('./routes/user');
 const cardRoute = require('./routes/card');
+const notificationsRoute = require('./routes/notifications');
+
 
 
 app.use('/api/user', userRoute);
-app.use('/api/card', cardRoute)
+app.use('/api/card', cardRoute);
+app.use('/api/notification', notificationsRoute);
 app.use(express.json());
 app.use(bodyParser.json())
 
