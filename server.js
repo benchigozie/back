@@ -77,7 +77,7 @@ module.exports = { server, io, forceLogoutUser };
 
 
 
-const pool  = require("./db/pool");
+/*const pool  = require("./db/pool");
 console.log(pool);
 
 pool.query("SELECT NOW()", (err, res) => {
@@ -86,7 +86,7 @@ pool.query("SELECT NOW()", (err, res) => {
     } else {
         console.log("Database connected! Current time:", res.rows[0].now);
     }
-});
+});*/
 
 /*pool.query("SELECT * FROM users;", (error, results) => {
        
