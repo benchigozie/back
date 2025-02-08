@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "devstart": "nodemon server.js",
+    "devstart": "NODE_ENV=development nodemon server.js",
+
+    "devstart2": "NODE_ENV=production nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

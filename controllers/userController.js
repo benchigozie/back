@@ -11,7 +11,7 @@ const jwt = require('jsonwebtoken');
 const getAllUsers = (req, res) => {
     
     pool.query(queries.getAllUsersQuery, (error, results) => {
-        //if (error) throw error;
+       
 
         allUsers = results.rows.filter(user => user.role !== "master");
 

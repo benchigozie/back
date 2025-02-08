@@ -1,0 +1,16 @@
+# Ignore environment variables
+.env.local
+.env.production
+
+# Node modules (big files, don’t upload)
+node_modules
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Cache files
+.DS_Store
+dist
+build

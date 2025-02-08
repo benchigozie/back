@@ -74,6 +74,30 @@ const forceLogoutUser = (userEmail) => {
 
 module.exports = { server, io, forceLogoutUser }; 
 
+
+
+const pool  = require("./db/pool");
+console.log(pool);
+
+pool.query("SELECT NOW()", (err, res) => {
+    if (err) {
+        console.error("Database connection error:", err);
+    } else {
+        console.log("Database connected! Current time:", res.rows[0].now);
+    }
+});
+
+/*pool.query("SELECT * FROM users;", (error, results) => {
+       
+
+    allUsers = results.rows.filter(user => user.role !== "master");
+
+    res.status(200).json(allUsers);
+});*/
+
+
+
+
 server.listen(3000, () => {
     console.log('now listening')
 })
