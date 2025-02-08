@@ -96,7 +96,9 @@ pool.query("SELECT NOW()", (err, res) => {
     res.status(200).json(allUsers);
 });*/
 
-
+app.get("/", (req, res) => {
+    res.send("Server is running!");
+});
 
 
 server.listen(process.env.PORT, () => {
