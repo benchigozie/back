@@ -28,6 +28,7 @@ app.use('/api/card', cardRoute);
 app.use(express.json());
 
 
+
 let io;
 
 
@@ -98,6 +99,6 @@ pool.query("SELECT NOW()", (err, res) => {
 
 
 
-server.listen(3000, () => {
+server.listen(process.env.PORT, () => {
     console.log('now listening')
 })
