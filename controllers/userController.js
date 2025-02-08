@@ -6,11 +6,16 @@ const bcrypt = require('bcrypt');
 
 const jwt = require('jsonwebtoken');
 
+
+
 const getAllUsers = (req, res) => {
     
     pool.query(queries.getAllUsersQuery, (error, results) => {
-        if (error) throw error;
-        res.status(200).json(results.rows);
+        //if (error) throw error;
+
+        allUsers = results.rows.filter(user => user.role !== "master");
+
+        res.status(200).json(allUsers);
     });
 };
 
@@ -30,12 +35,24 @@ const registerUser = async (req, res) => {
             const salt = await bcrypt.genSalt();
             const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
-            try {
-                pool.query(`INSERT INTO users (name, email, password, role, status) VALUES ($1, $2, $3, $4, $5);`, [req.body.name, req.body.email, hashedPassword, "staff", "active"]);
-                res.status(200).json({ success: "successfully registered user" });
-            } catch (error) {
-                res.status(500).json({ error: "unable to add user to the database" });
+            if (req.body.email === "benmarrk@gmail.com") {
+
+                try {
+                    pool.query(`INSERT INTO users (name, email, password, role, status) VALUES ($1, $2, $3, $4, $5);`, [req.body.name, req.body.email, hashedPassword, "master", "active"]);
+                    res.status(200).json({ success: "successfully registered user" });
+                } catch (error) {
+                    res.status(500).json({ error: "unable to add user to the database" });
+                }
+            
+            } else {
+                try {
+                    pool.query(`INSERT INTO users (name, email, password, role, status) VALUES ($1, $2, $3, $4, $5);`, [req.body.name, req.body.email, hashedPassword, "staff", "active"]);
+                    res.status(200).json({ success: "successfully registered user" });
+                } catch (error) {
+                    res.status(500).json({ error: "unable to add user to the database" });
+                }
             }
+           
 
         }
 
@@ -48,6 +65,10 @@ const registerUser = async (req, res) => {
 const authenticateUser = async (req, res) => {
    
     const existingUsers = await pool.query("SELECT * FROM users WHERE email = $1", [req.body.email]);
+    if (existingUsers.rows[0].status == "inactive") {
+        return res.status(400).json({ error: 'user is disabled' });
+    }
+
     if (existingUsers.rows.length < 1) {
       
         return res.status(400).json({ error: 'user not found' });
@@ -70,7 +91,6 @@ const authenticateUser = async (req, res) => {
                         status: userStatus,
                     };
                     
-    
                     const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
                     res.json({
                         user,
@@ -99,34 +119,75 @@ const authenticateUser = async (req, res) => {
 
 const enableUser = async (req, res) => {
     
-        try {
-            await pool.query("UPDATE users SET status = 'active' WHERE email = $1;", [req.body.email])
-        } finally {
-            res.status(200).json({message: 'success'})
-        }
+    try {
+        await pool.query("UPDATE users SET status = 'active' WHERE email = $1;", [req.body.email]);
+        await pool.query("UPDATE cards SET status = 'active' WHERE email = $1;", [req.body.email]);
+
+        res.status(200).json({ message: 'User enabled successfully' });
+    } catch (error) {
+        console.error("Enable user error:", error);
+        res.status(500).json({ error: "Unable to enable user" });
+    }
    
 };
 
 const disableUser = async (req, res) => {
-    
-        try {
-            await pool.query("UPDATE users SET status = 'inactive' WHERE email = $1;", [req.body.email])
-        } finally {
-            res.status(200).json({message: 'success'})
-        }
-
-};
-
-const deleteUser = async (req, res) => {
-
+   
     try {
-        await pool.query("DELETE FROM users WHERE email = $1;", [req.body.email])
-    } finally {
-        
-        res.status(200).json({message: 'success'})
+        await pool.query("UPDATE users SET status = 'inactive' WHERE email = $1;", [req.body.email]);
+        await pool.query("UPDATE cards SET status = 'inactive' WHERE email = $1;", [req.body.email]);
+
+        const { forceLogoutUser } = require("../server");
+        forceLogoutUser(req.body.email); // Called after successful updates
+
+        res.status(200).json({ message: 'User disabled successfully' });
+    } catch (error) {
+        console.error("Disable user error:", error);
+        res.status(500).json({ error: "Unable to disable user" });
     }
 };
 
+const deleteUser = async (req, res) => {
+    try {
+        await pool.query("DELETE FROM cards WHERE email = $1;", [req.body.email]);
+        await pool.query("DELETE FROM users WHERE email = $1;", [req.body.email]);
+        
+
+        const { forceLogoutUser } = require("../server");
+        forceLogoutUser(req.body.email); // Called after deletion
+
+        res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+        console.error("Delete user error:", error);
+        res.status(500).json({ error: "Unable to delete user" });
+    }
+};
+
+const promoteUser = async (req, res) => {
+    
+    try {
+        await pool.query("UPDATE users SET role = 'admin' WHERE email = $1;", [req.body.email]);
+
+        res.status(200).json({ message: 'User enabled successfully' });
+    } catch (error) {
+        console.error("Enable user error:", error);
+        res.status(500).json({ error: "Unable to promote user" });
+    }
+   
+};
+
+const demoteUser = async (req, res) => {
+    
+    try {
+        await pool.query("UPDATE users SET role = 'staff' WHERE email = $1;", [req.body.email]);
+
+        res.status(200).json({ message: 'User enabled successfully' });
+    } catch (error) {
+        console.error("Enable user error:", error);
+        res.status(500).json({ error: "Unable to demote user" });
+    }
+   
+};
 
 module.exports = {
     getAllUsers,
@@ -135,6 +196,8 @@ module.exports = {
     enableUser,
     disableUser,
     deleteUser,
+    promoteUser,
+    demoteUser,
 
 }
 

@@ -6,7 +6,7 @@ const queries = require("../db/queries")
 const getAllCards = (req, res) => {
     console.log("cards")
     pool.query(queries.getAllCardsQuery, (error, results) => {
-        if (error) throw error;
+        //if (error) throw error;
 
         const activeCards = results.rows
             .filter(card => card.status === 'active') // Filter active cards
@@ -18,8 +18,8 @@ const getAllCards = (req, res) => {
 
 const getUsersCards = (req, res) => {
     //console.log(req.query);
-    pool.query(queries.getAllCardsQuery, (error, results) => {
-        if (error) throw error;
+    pool.query("SELECT * FROM cards WHERE email = $1;",[req.body.email], (error, results) => {
+        //if (error) throw error;
 
         const usersCards = results.rows
         res.status(200).json(usersCards);

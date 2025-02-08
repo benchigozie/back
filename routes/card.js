@@ -5,11 +5,13 @@ const { getAllCards, getUsersCards, registerCard, enableCard, disableCard, delet
 
 
 
+
 cardRouter.get('/all', getAllCards);
 cardRouter.get('/mycards', getUsersCards);
 cardRouter.post('/register', registerCard);
 cardRouter.put('/enable', enableCard);
 cardRouter.put('/disable', disableCard);
 cardRouter.put('/delete', deleteCard);
+
 
 module.exports = cardRouter;
