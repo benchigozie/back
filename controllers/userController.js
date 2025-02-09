@@ -10,6 +10,7 @@ const jwt = require('jsonwebtoken');
 
 const getAllUsers = (req, res) => {
     
+    console.log("bluuuuu");
     pool.query(queries.getAllUsersQuery, (error, results) => {
        
 
@@ -64,7 +65,9 @@ const registerUser = async (req, res) => {
 
 const authenticateUser = async (req, res) => {
    
+     
     const existingUsers = await pool.query("SELECT * FROM users WHERE email = $1", [req.body.email]);
+   
     if (existingUsers.rows[0].status == "inactive") {
         return res.status(400).json({ error: 'user is disabled' });
     }
