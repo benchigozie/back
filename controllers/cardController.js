@@ -1,4 +1,4 @@
-const { query } = require("express");
+//const { query } = require("express");
 const pool = require("../db/pool");
 
 const queries = require("../db/queries")
@@ -18,7 +18,7 @@ const getAllCards = (req, res) => {
 
 const getUsersCards = (req, res) => {
     
-    pool.query("SELECT * FROM cards WHERE email = $1;",[req.body.email], (error, results) => {
+    pool.query("SELECT * FROM cards WHERE email = $1;",[req.query.email], (error, results) => {
         
 
         const usersCards = results.rows
@@ -29,7 +29,7 @@ const getUsersCards = (req, res) => {
 
 
 const registerCard = async (req, res) => {
-
+    console.log("register card");
     try {
         await pool.query(`INSERT INTO cards (name, uid, email, status) VALUES ($1, $2, $3, $4);`, [req.body.name, req.body.uid, req.body.email, "active"]);
         res.status(200).json({ success: "successfully registered Card" });
