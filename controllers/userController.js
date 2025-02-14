@@ -2,7 +2,7 @@ const pool = require("../db/pool");
 
 const queries = require("../db/queries")
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 const jwt = require('jsonwebtoken');
 
